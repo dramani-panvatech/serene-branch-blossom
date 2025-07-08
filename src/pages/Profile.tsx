@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AdminSidebar from '../components/dashboard/AdminSidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -13,6 +13,25 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Camera, Save, Edit, Settings, Clock, Calendar, User, Shield, Bell, Upload, X } from 'lucide-react';
 
 const Profile = () => {
+  const [sidebarWidth, setSidebarWidth] = useState('250px');
+
+  // Listen for sidebar width changes
+  useEffect(() => {
+    const handleSidebarWidthChange = () => {
+      const width = document.documentElement.style.getPropertyValue('--sidebar-width') || '250px';
+      setSidebarWidth(width);
+    };
+
+    // Set up a MutationObserver to watch for style changes
+    const observer = new MutationObserver(handleSidebarWidthChange);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['style']
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const [profileData, setProfileData] = useState({
     name: 'Dr. Sarah Johnson',
     email: 'sarah.johnson@example.com',
@@ -57,10 +76,11 @@ const Profile = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gray-50">
-        <AdminSidebar />
+      <div className="min-h-screen flex w-full bg-gray-50"
+        style={{ '--sidebar-width': sidebarWidth } as React.CSSProperties}>
+        <AdminSidebar onWidthChange={setSidebarWidth} />
         <main className="flex-1 p-6 overflow-auto">
-          <div className="max-w-6xl mx-auto">
+          <div className="mx-auto">
             {/* Header */}
             <div className="mb-8">
               <div className="flex items-center justify-between">
@@ -105,9 +125,9 @@ const Profile = () => {
                               <Avatar className="h-32 w-32 mx-auto mb-4">
                                 <AvatarImage src={profileImage} alt="Preview" />
                               </Avatar>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
+                              <Button
+                                variant="outline"
+                                size="sm"
                                 onClick={removeImage}
                                 className="text-red-600 hover:text-red-700"
                               >
@@ -116,12 +136,12 @@ const Profile = () => {
                               </Button>
                             </div>
                           )}
-                          
+
                           <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                             <Upload className="h-8 w-8 text-gray-400 mx-auto mb-4" />
                             <p className="text-gray-600 mb-4">
                               Drop your image here, or{' '}
-                              <button 
+                              <button
                                 onClick={() => fileInputRef.current?.click()}
                                 className="text-blue-600 hover:text-blue-700 font-medium"
                               >
@@ -141,15 +161,15 @@ const Profile = () => {
                           </div>
 
                           <div className="flex space-x-2">
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               className="flex-1"
                               onClick={() => fileInputRef.current?.click()}
                             >
                               <Upload className="h-4 w-4 mr-2" />
                               Choose File
                             </Button>
-                            <Button 
+                            <Button
                               className="flex-1"
                               onClick={() => setShowImageUpload(false)}
                               disabled={!profileImage}

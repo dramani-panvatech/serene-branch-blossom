@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AdminSidebar from '../components/dashboard/AdminSidebar';
 import { Button } from '@/components/ui/button';
@@ -11,16 +11,36 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 const Calendar = () => {
+  const [sidebarWidth, setSidebarWidth] = useState('250px');
+
+  // Listen for sidebar width changes
+  useEffect(() => {
+    const handleSidebarWidthChange = () => {
+      const width = document.documentElement.style.getPropertyValue('--sidebar-width') || '250px';
+      setSidebarWidth(width);
+    };
+
+    // Set up a MutationObserver to watch for style changes
+    const observer = new MutationObserver(handleSidebarWidthChange);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['style']
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
   const [showNewAppointment, setShowNewAppointment] = useState(false);
-  
+
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const timeSlots = Array.from({ length: 12 }, (_, i) => {
     const hour = i + 8;
     return hour > 12 ? `${hour - 12}:00 PM` : `${hour}:00 AM`;
   });
-  
+
   const appointments = [
     {
       id: 1,
@@ -85,10 +105,11 @@ const Calendar = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gray-50">
-        <AdminSidebar />
+      <div className="min-h-screen flex w-full bg-gray-50"
+        style={{ '--sidebar-width': sidebarWidth } as React.CSSProperties}>
+        <AdminSidebar onWidthChange={setSidebarWidth} />
         <main className="flex-1 p-6 overflow-auto">
-          <div className="max-w-7xl mx-auto">
+          <div className="mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-4">
@@ -235,15 +256,15 @@ const Calendar = () => {
                         </Button>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Button 
-                          variant={viewMode === 'week' ? 'default' : 'outline'} 
+                        <Button
+                          variant={viewMode === 'week' ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => setViewMode('week')}
                         >
                           Week
                         </Button>
-                        <Button 
-                          variant={viewMode === 'month' ? 'default' : 'outline'} 
+                        <Button
+                          variant={viewMode === 'month' ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => setViewMode('month')}
                         >
@@ -263,7 +284,7 @@ const Calendar = () => {
                         </div>
                       ))}
                     </div>
-                    
+
                     <div className="max-h-96 overflow-y-auto">
                       {timeSlots.map((time, timeIndex) => (
                         <div key={time} className="grid grid-cols-8 border-b last:border-b-0 min-h-[80px]">
@@ -271,8 +292,8 @@ const Calendar = () => {
                             {time}
                           </div>
                           {weekDays.map((day, dayIndex) => (
-                            <div 
-                              key={`${time}-${day}`} 
+                            <div
+                              key={`${time}-${day}`}
                               className="p-2 border-r last:border-r-0 hover:bg-gray-50 relative cursor-pointer"
                               onContextMenu={(e) => handleCellRightClick(e, time, dayIndex)}
                               onClick={() => setShowNewAppointment(true)}
@@ -286,7 +307,7 @@ const Calendar = () => {
                                   >
                                     <p className="font-medium truncate">{appointment.title}</p>
                                     <p className="text-xs opacity-75">{appointment.time}</p>
-                                    <Badge 
+                                    <Badge
                                       variant={appointment.status === 'confirmed' ? 'default' : 'secondary'}
                                       className="text-xs mt-1"
                                     >

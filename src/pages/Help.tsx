@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AdminSidebar from '../components/dashboard/AdminSidebar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +12,26 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { HelpCircle, Search, MessageCircle, Book, Phone, Mail, Video, FileText, Clock, CheckCircle } from 'lucide-react';
 
 const Help = () => {
+  const [sidebarWidth, setSidebarWidth] = useState('250px');
+
+  // Listen for sidebar width changes
+  useEffect(() => {
+    const handleSidebarWidthChange = () => {
+      const width = document.documentElement.style.getPropertyValue('--sidebar-width') || '250px';
+      setSidebarWidth(width);
+    };
+
+    // Set up a MutationObserver to watch for style changes
+    const observer = new MutationObserver(handleSidebarWidthChange);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['style']
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+
   const [searchTerm, setSearchTerm] = useState('');
 
   const faqs = [
@@ -121,17 +141,18 @@ const Help = () => {
     }
   ];
 
-  const filteredFAQs = faqs.filter(faq => 
+  const filteredFAQs = faqs.filter(faq =>
     faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
     faq.answer.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gray-50">
-        <AdminSidebar />
+      <div className="min-h-screen flex w-full bg-gray-50"
+        style={{ '--sidebar-width': sidebarWidth } as React.CSSProperties}>
+        <AdminSidebar onWidthChange={setSidebarWidth} />
         <main className="flex-1 p-6 overflow-auto">
-          <div className="max-w-7xl mx-auto">
+          <div className="mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-4">
@@ -163,8 +184,8 @@ const Help = () => {
                   <p className="text-gray-600 mb-6">Search our knowledge base or browse common topics</p>
                   <div className="relative max-w-2xl mx-auto">
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <Input 
-                      placeholder="Search for help articles, tutorials, or FAQs..." 
+                    <Input
+                      placeholder="Search for help articles, tutorials, or FAQs..."
                       className="pl-12 h-12 text-lg"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
@@ -331,7 +352,7 @@ const Help = () => {
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Message</label>
-                        <Textarea 
+                        <Textarea
                           placeholder="Please provide as much detail as possible..."
                           rows={6}
                         />

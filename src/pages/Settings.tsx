@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AdminSidebar from '../components/dashboard/AdminSidebar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +13,26 @@ import { Textarea } from '@/components/ui/textarea';
 import { Settings as SettingsIcon, Shield, Bell, Users, Calendar, Globe, Database, Mail, Smartphone } from 'lucide-react';
 
 const Settings = () => {
+  const [sidebarWidth, setSidebarWidth] = useState('250px');
+
+  // Listen for sidebar width changes
+  useEffect(() => {
+    const handleSidebarWidthChange = () => {
+      const width = document.documentElement.style.getPropertyValue('--sidebar-width') || '250px';
+      setSidebarWidth(width);
+    };
+
+    // Set up a MutationObserver to watch for style changes
+    const observer = new MutationObserver(handleSidebarWidthChange);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['style']
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+
   const [notifications, setNotifications] = useState({
     email: true,
     sms: false,
@@ -24,10 +44,11 @@ const Settings = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gray-50">
-        <AdminSidebar />
+      <div className="min-h-screen flex w-full bg-gray-50"
+        style={{ '--sidebar-width': sidebarWidth } as React.CSSProperties}>
+        <AdminSidebar onWidthChange={setSidebarWidth} />
         <main className="flex-1 p-6 overflow-auto">
-          <div className="max-w-7xl mx-auto">
+          <div className="mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-4">
@@ -282,7 +303,7 @@ const Settings = () => {
                             <p className="text-sm text-gray-600">Receive notifications via email</p>
                           </div>
                         </div>
-                        <Switch checked={notifications.email} onCheckedChange={(checked) => setNotifications({...notifications, email: checked})} />
+                        <Switch checked={notifications.email} onCheckedChange={(checked) => setNotifications({ ...notifications, email: checked })} />
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
@@ -292,7 +313,7 @@ const Settings = () => {
                             <p className="text-sm text-gray-600">Receive notifications via SMS</p>
                           </div>
                         </div>
-                        <Switch checked={notifications.sms} onCheckedChange={(checked) => setNotifications({...notifications, sms: checked})} />
+                        <Switch checked={notifications.sms} onCheckedChange={(checked) => setNotifications({ ...notifications, sms: checked })} />
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
@@ -302,7 +323,7 @@ const Settings = () => {
                             <p className="text-sm text-gray-600">Receive browser notifications</p>
                           </div>
                         </div>
-                        <Switch checked={notifications.push} onCheckedChange={(checked) => setNotifications({...notifications, push: checked})} />
+                        <Switch checked={notifications.push} onCheckedChange={(checked) => setNotifications({ ...notifications, push: checked })} />
                       </div>
                     </CardContent>
                   </Card>
@@ -317,21 +338,21 @@ const Settings = () => {
                           <p className="font-medium">Appointment Notifications</p>
                           <p className="text-sm text-gray-600">New bookings and cancellations</p>
                         </div>
-                        <Switch checked={notifications.appointments} onCheckedChange={(checked) => setNotifications({...notifications, appointments: checked})} />
+                        <Switch checked={notifications.appointments} onCheckedChange={(checked) => setNotifications({ ...notifications, appointments: checked })} />
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium">Payment Notifications</p>
                           <p className="text-sm text-gray-600">Payment confirmations and failures</p>
                         </div>
-                        <Switch checked={notifications.payments} onCheckedChange={(checked) => setNotifications({...notifications, payments: checked})} />
+                        <Switch checked={notifications.payments} onCheckedChange={(checked) => setNotifications({ ...notifications, payments: checked })} />
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium">Reminder Notifications</p>
                           <p className="text-sm text-gray-600">Appointment reminders</p>
                         </div>
-                        <Switch checked={notifications.reminders} onCheckedChange={(checked) => setNotifications({...notifications, reminders: checked})} />
+                        <Switch checked={notifications.reminders} onCheckedChange={(checked) => setNotifications({ ...notifications, reminders: checked })} />
                       </div>
                     </CardContent>
                   </Card>

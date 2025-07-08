@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AdminSidebar from '../components/dashboard/AdminSidebar';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 
 const Services = () => {
+
+  const [sidebarWidth, setSidebarWidth] = useState('250px');
+
+  // Listen for sidebar width changes
+  useEffect(() => {
+    const handleSidebarWidthChange = () => {
+      const width = document.documentElement.style.getPropertyValue('--sidebar-width') || '250px';
+      setSidebarWidth(width);
+    };
+
+    // Set up a MutationObserver to watch for style changes
+    const observer = new MutationObserver(handleSidebarWidthChange);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['style']
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('services');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -92,17 +112,18 @@ const Services = () => {
     }
   ];
 
-  const filteredServices = services.filter(service => 
+  const filteredServices = services.filter(service =>
     service.category === selectedCategory &&
     service.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gray-50">
-        <AdminSidebar />
+      <div className="min-h-screen flex w-full bg-gray-50"
+        style={{ '--sidebar-width': sidebarWidth } as React.CSSProperties}>
+        <AdminSidebar onWidthChange={setSidebarWidth} />
         <main className="flex-1 p-6 overflow-auto">
-          <div className="max-w-7xl mx-auto">
+          <div className="mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-4">
@@ -241,7 +262,7 @@ const Services = () => {
                 </CardContent>
               </Card>
             </div>
-            
+
             <div className="flex gap-6">
               {/* Categories Sidebar */}
               <div className="w-64">
@@ -262,7 +283,7 @@ const Services = () => {
                   </div>
                 </Card>
               </div>
-              
+
               {/* Main Content */}
               <div className="flex-1">
                 {/* Controls */}
@@ -273,8 +294,8 @@ const Services = () => {
                   <div className="flex items-center space-x-4">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input 
-                        placeholder="Search services..." 
+                      <Input
+                        placeholder="Search services..."
                         className="pl-10 w-80"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -298,7 +319,7 @@ const Services = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Services Grid/List */}
                 {viewMode === 'grid' ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

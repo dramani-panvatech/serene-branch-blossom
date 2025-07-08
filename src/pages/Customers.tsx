@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AdminSidebar from '../components/dashboard/AdminSidebar';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,25 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Upload, Search, Filter, Grid3X3, Table, Eye, Phone, Mail, MapPin, Calendar, User } from 'lucide-react';
 
 const Customers = () => {
+  const [sidebarWidth, setSidebarWidth] = useState('250px');
+
+  // Listen for sidebar width changes
+  useEffect(() => {
+    const handleSidebarWidthChange = () => {
+      const width = document.documentElement.style.getPropertyValue('--sidebar-width') || '250px';
+      setSidebarWidth(width);
+    };
+
+    // Set up a MutationObserver to watch for style changes
+    const observer = new MutationObserver(handleSidebarWidthChange);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['style']
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const [customers, setCustomers] = useState([
     {
       id: 1,
@@ -50,7 +69,7 @@ const Customers = () => {
       avatar: 'MJ'
     }
   ]);
-  
+
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -58,10 +77,10 @@ const Customers = () => {
 
   const filteredCustomers = customers.filter(customer => {
     const matchesSearch = customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         customer.email.toLowerCase().includes(searchTerm.toLowerCase());
+      customer.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || customer.status === filterStatus;
     const matchesLocation = filterLocation === 'all' || customer.location.includes(filterLocation);
-    
+
     return matchesSearch && matchesStatus && matchesLocation;
   });
 
@@ -77,7 +96,7 @@ const Customers = () => {
               <div className="flex-1">
                 <h3 className="font-semibold text-lg text-gray-900">{customer.name}</h3>
                 <p className="text-gray-600 text-sm">{customer.email}</p>
-                <Badge 
+                <Badge
                   variant={customer.status === 'active' ? 'default' : 'secondary'}
                   className="mt-1"
                 >
@@ -85,7 +104,7 @@ const Customers = () => {
                 </Badge>
               </div>
             </div>
-            
+
             <div className="space-y-2 text-sm text-gray-600 mb-4">
               <div className="flex items-center">
                 <Phone className="h-4 w-4 mr-2" />
@@ -189,10 +208,11 @@ const Customers = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gray-50">
-        <AdminSidebar />
+      <div className="min-h-screen flex w-full bg-gray-50"
+        style={{ '--sidebar-width': sidebarWidth } as React.CSSProperties}>
+        <AdminSidebar onWidthChange={setSidebarWidth} />
         <main className="flex-1 p-6">
-          <div className="max-w-7xl mx-auto">
+          <div className="mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-4">
@@ -227,7 +247,7 @@ const Customers = () => {
                         </div>
                         <Button variant="outline" size="sm">Upload Photo</Button>
                       </div>
-                      
+
                       <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
@@ -239,25 +259,25 @@ const Customers = () => {
                             <Input id="lastName" placeholder="Smith" />
                           </div>
                         </div>
-                        
+
                         <div className="space-y-2">
                           <Label htmlFor="email">Email Address</Label>
                           <Input id="email" type="email" placeholder="john.smith@example.com" />
                         </div>
-                        
+
                         <div className="space-y-2">
                           <Label htmlFor="phone">Phone Number</Label>
                           <Input id="phone" placeholder="+1 (555) 123-4567" />
                         </div>
-                        
+
                         <div className="space-y-2">
                           <Label htmlFor="address">Address</Label>
                           <Input id="address" placeholder="123 Main St, City, State 12345" />
                         </div>
-                        
+
                         <div className="space-y-2">
                           <Label htmlFor="notes">Notes</Label>
-                          <textarea 
+                          <textarea
                             id="notes"
                             rows={3}
                             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -265,7 +285,7 @@ const Customers = () => {
                           />
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-end space-x-3 pt-4">
                         <Button variant="ghost">Cancel</Button>
                         <Button className="bg-gradient-to-r from-purple-600 to-pink-600">
@@ -351,7 +371,7 @@ const Customers = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-4">
                     <Select value={filterStatus} onValueChange={setFilterStatus}>
                       <SelectTrigger className="w-32">

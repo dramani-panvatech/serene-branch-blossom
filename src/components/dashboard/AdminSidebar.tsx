@@ -28,7 +28,11 @@ import {
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 
-const AdminSidebar = () => {
+interface AdminSidebarProps {
+  onWidthChange?: (width: string) => void;
+}
+
+const AdminSidebar = ({ onWidthChange }: AdminSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,7 +40,7 @@ const AdminSidebar = () => {
   const homeItems = [
     { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
     { title: 'Customers', url: '/dashboard/customers', icon: Users },
-    { title: 'Provider', url: '/dashboard/provider', icon: UserCheck },
+    { title: 'Staff', url: '/dashboard/provider', icon: UserCheck },
     { title: 'Calendar', url: '/dashboard/calendar', icon: Calendar },
     { title: 'Services', url: '/dashboard/services', icon: Package },
     { title: 'Payment', url: '/dashboard/payment', icon: CreditCard },
@@ -45,7 +49,22 @@ const AdminSidebar = () => {
     { title: 'Profile', url: '/dashboard/profile', icon: User },
   ];
 
-  const toggleSidebar = () => setCollapsed((prev) => !prev);
+  const toggleSidebar = () => {
+    setCollapsed((prev) => {
+      const newCollapsed = !prev;
+      const newWidth = newCollapsed ? '80px' : '250px';
+      
+      // Update CSS variable for sidebar width
+      document.documentElement.style.setProperty('--sidebar-width', newWidth);
+      
+      // Notify parent component
+      if (onWidthChange) {
+        onWidthChange(newWidth);
+      }
+      
+      return newCollapsed;
+    });
+  };
 
   const renderMenuItem = (item: any) => {
     const isActive = location.pathname === item.url;
@@ -86,10 +105,7 @@ const AdminSidebar = () => {
 
   return (
     <Sidebar
-      className={`border-r bg-white dark:bg-gray-900 dark:border-gray-800 shadow-sm
-        transition-width duration-300 ease-in-out
-        ${collapsed ? 'w-20' : 'w-64'}
-      `}
+      className="border-r bg-white dark:bg-gray-900 dark:border-gray-800 shadow-sm w-[--sidebar-width] transition-all duration-300 ease-in-out"
     >
       <SidebarHeader className="p-4 border-b dark:border-gray-800 relative">
         <div className="flex items-center gap-3">
@@ -110,12 +126,11 @@ const AdminSidebar = () => {
           className="absolute top-4 right-4 p-1 rounded-md text-gray-600 dark:text-gray-300 bg-border dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          type="button" style={{right: -13}}
+          type="button" style={{ right: -13 }}
         >
           {collapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
         </button>
       </SidebarHeader>
-
 
       <SidebarContent className="px-2 py-6">
         <SidebarGroup>

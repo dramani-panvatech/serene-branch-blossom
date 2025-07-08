@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AdminSidebar from '../components/dashboard/AdminSidebar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +12,25 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { CreditCard, DollarSign, TrendingUp, Receipt, Plus, Settings, Wallet, Smartphone, Building } from 'lucide-react';
 
 const Payment = () => {
+  const [sidebarWidth, setSidebarWidth] = useState('250px');
+
+  // Listen for sidebar width changes
+  useEffect(() => {
+    const handleSidebarWidthChange = () => {
+      const width = document.documentElement.style.getPropertyValue('--sidebar-width') || '250px';
+      setSidebarWidth(width);
+    };
+
+    // Set up a MutationObserver to watch for style changes
+    const observer = new MutationObserver(handleSidebarWidthChange);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['style']
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('stripe');
   const [showAddPaymentMethod, setShowAddPaymentMethod] = useState(false);
 
@@ -40,10 +59,11 @@ const Payment = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gray-50">
-        <AdminSidebar />
+      <div className="min-h-screen flex w-full bg-gray-50"
+        style={{ '--sidebar-width': sidebarWidth } as React.CSSProperties}>
+        <AdminSidebar onWidthChange={setSidebarWidth} />
         <main className="flex-1 p-6 overflow-auto">
-          <div className="max-w-7xl mx-auto">
+          <div className="mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-4">
@@ -78,11 +98,10 @@ const Payment = () => {
                           {paymentMethods.map((method) => (
                             <div
                               key={method.id}
-                              className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                                selectedPaymentMethod === method.id 
-                                  ? 'border-blue-500 bg-blue-50' 
-                                  : 'border-gray-200 hover:border-gray-300'
-                              }`}
+                              className={`border rounded-lg p-4 cursor-pointer transition-colors ${selectedPaymentMethod === method.id
+                                ? 'border-blue-500 bg-blue-50'
+                                : 'border-gray-200 hover:border-gray-300'
+                                }`}
                               onClick={() => setSelectedPaymentMethod(method.id)}
                             >
                               <div className="flex items-center space-x-3">
@@ -229,10 +248,10 @@ const Payment = () => {
                             </div>
                             <div className="text-right">
                               <p className="font-bold text-gray-900">{transaction.amount}</p>
-                              <Badge 
+                              <Badge
                                 variant={
                                   transaction.status === 'completed' ? 'default' :
-                                  transaction.status === 'pending' ? 'secondary' : 'destructive'
+                                    transaction.status === 'pending' ? 'secondary' : 'destructive'
                                 }
                               >
                                 {transaction.status}
@@ -284,8 +303,8 @@ const Payment = () => {
                                 </div>
                                 <h3 className="font-semibold text-gray-900">{method.name}</h3>
                               </div>
-                              <input 
-                                type="checkbox" 
+                              <input
+                                type="checkbox"
                                 defaultChecked={method.id === 'stripe' || method.id === 'paypal'}
                                 className="h-4 w-4 text-blue-600"
                               />
@@ -321,7 +340,7 @@ const Payment = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      
+
                       <div className="overflow-x-auto">
                         <table className="w-full">
                           <thead className="bg-gray-50 border-b">
@@ -343,10 +362,10 @@ const Payment = () => {
                                 <td className="p-4 font-semibold">{transaction.amount}</td>
                                 <td className="p-4">{transaction.method}</td>
                                 <td className="p-4">
-                                  <Badge 
+                                  <Badge
                                     variant={
                                       transaction.status === 'completed' ? 'default' :
-                                      transaction.status === 'pending' ? 'secondary' : 'destructive'
+                                        transaction.status === 'pending' ? 'secondary' : 'destructive'
                                     }
                                   >
                                     {transaction.status}
@@ -453,7 +472,7 @@ const Payment = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-4">
                       <h4 className="font-medium">Currency & Taxes</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -476,7 +495,7 @@ const Payment = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <Button>Save Settings</Button>
                   </CardContent>
                 </Card>

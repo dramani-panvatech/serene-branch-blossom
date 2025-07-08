@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AdminSidebar from '../components/dashboard/AdminSidebar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +10,26 @@ import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Grid3X3, Table, Plus, Star, MapPin, Phone, Mail, Eye } from 'lucide-react';
 
 const Provider = () => {
+
+  const [sidebarWidth, setSidebarWidth] = useState('250px');
+
+  // Listen for sidebar width changes
+  useEffect(() => {
+    const handleSidebarWidthChange = () => {
+      const width = document.documentElement.style.getPropertyValue('--sidebar-width') || '250px';
+      setSidebarWidth(width);
+    };
+
+    // Set up a MutationObserver to watch for style changes
+    const observer = new MutationObserver(handleSidebarWidthChange);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['style']
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -62,10 +82,10 @@ const Provider = () => {
 
   const filteredProviders = providers.filter(provider => {
     const matchesSearch = provider.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         provider.specialty.toLowerCase().includes(searchTerm.toLowerCase());
+      provider.specialty.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || provider.status === filterStatus;
     const matchesSpecialty = filterSpecialty === 'all' || provider.specialty === filterSpecialty;
-    
+
     return matchesSearch && matchesStatus && matchesSpecialty;
   });
 
@@ -92,7 +112,7 @@ const Provider = () => {
                 {provider.status}
               </Badge>
             </div>
-            
+
             <div className="space-y-2 text-sm text-gray-600 mb-4">
               <div className="flex items-center">
                 <MapPin className="h-4 w-4 mr-2" />
@@ -191,10 +211,11 @@ const Provider = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gray-50">
-        <AdminSidebar />
+      <div className="min-h-screen flex w-full bg-gray-50"
+        style={{ '--sidebar-width': sidebarWidth } as React.CSSProperties}>
+        <AdminSidebar onWidthChange={setSidebarWidth} />
         <main className="flex-1 p-6">
-          <div className="max-w-7xl mx-auto">
+          <div className="mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -222,7 +243,7 @@ const Provider = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-4">
                     <Select value={filterStatus} onValueChange={setFilterStatus}>
                       <SelectTrigger className="w-32">
