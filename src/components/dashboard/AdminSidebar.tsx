@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   Calendar, 
@@ -13,7 +13,8 @@ import {
   HelpCircle,
   User,
   LogOut,
-  Search
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 import {
   Sidebar,
@@ -27,20 +28,108 @@ import {
   SidebarFooter,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
+  const [expandedSections, setExpandedSections] = useState<string[]>(['home']);
 
-  const menuItems = [
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections(prev => 
+      prev.includes(sectionId) 
+        ? prev.filter(id => id !== sectionId)
+        : [...prev, sectionId]
+    );
+  };
+
+  const homeItems = [
     { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
-    { title: 'Customers', url: '/dashboard/customers', icon: Users },
-    { title: 'Provider', url: '/dashboard/provider', icon: UserCheck },
-    { title: 'Calendar', url: '/dashboard/calendar', icon: Calendar },
-    { title: 'Services', url: '/dashboard/services', icon: Package },
-    { title: 'Payment', url: '/dashboard/payment', icon: CreditCard },
-    { title: 'Settings', url: '/dashboard/settings', icon: Settings },
+    { title: 'Dashboard 2', url: '/dashboard/analytics', icon: LayoutDashboard },
   ];
+
+  const uiComponentItems = [
+    { title: 'Buttons', url: '/dashboard/buttons', icon: Package },
+    { title: 'Alerts', url: '/dashboard/alerts', icon: HelpCircle },
+    { title: 'Card', url: '/dashboard/card', icon: CreditCard },
+    { title: 'Forms', url: '/dashboard/forms', icon: Settings },
+    { title: 'Typography', url: '/dashboard/typography', icon: Settings },
+  ];
+
+  const appItems = [
+    { 
+      title: 'Ecommerce', 
+      icon: Package, 
+      expandable: true,
+      children: [
+        { title: 'Products', url: '/dashboard/products' },
+        { title: 'Orders', url: '/dashboard/orders' },
+      ]
+    },
+    { 
+      title: 'User Profile', 
+      icon: User, 
+      expandable: true,
+      children: [
+        { title: 'Profile', url: '/dashboard/profile' },
+        { title: 'Settings', url: '/dashboard/settings' },
+      ]
+    },
+    { 
+      title: 'Blog', 
+      icon: Settings, 
+      expandable: true,
+      children: [
+        { title: 'Posts', url: '/dashboard/posts' },
+        { title: 'Categories', url: '/dashboard/categories' },
+      ]
+    },
+  ];
+
+  const renderMenuItem = (item: any, isChild = false) => (
+    <SidebarMenuItem key={item.title}>
+      <SidebarMenuButton asChild>
+        <NavLink
+          to={item.url}
+          className={({ isActive }) =>
+            `group flex items-center justify-center rounded-xl transition-all duration-200 p-3 ${
+              isActive
+                ? 'bg-blue-100 text-blue-600'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+            } ${isChild ? 'ml-4 p-2' : ''}`
+          }
+        >
+          <item.icon className="h-5 w-5" />
+        </NavLink>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+
+  const renderExpandableItem = (item: any) => {
+    const isExpanded = expandedSections.includes(item.title.toLowerCase());
+    return (
+      <div key={item.title}>
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild>
+            <button
+              onClick={() => toggleSection(item.title.toLowerCase())}
+              className="group flex items-center justify-center rounded-xl transition-all duration-200 p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-50 w-full relative"
+            >
+              <item.icon className="h-5 w-5" />
+              {isExpanded ? (
+                <ChevronDown className="h-3 w-3 absolute -bottom-1 -right-1 text-gray-400" />
+              ) : (
+                <ChevronRight className="h-3 w-3 absolute -bottom-1 -right-1 text-gray-400" />
+              )}
+            </button>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        {isExpanded && item.children && (
+          <div className="ml-2 space-y-1">
+            {item.children.map((child: any) => renderMenuItem(child, true))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const handleSignOut = () => {
     console.log('User signed out');
@@ -48,102 +137,67 @@ const AdminSidebar = () => {
   };
 
   return (
-    <Sidebar className="w-72 border-r-0 bg-white/80 backdrop-blur-sm">
-      <SidebarHeader className="p-8 border-b-0">
-        <div className="flex items-center justify-center mb-8">
-          <div className="flex items-center space-x-3">
-            <div className="h-9 w-9 bg-gradient-to-br from-rose-400 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-              <Clock className="h-4 w-4 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-semibold text-gray-800 font-cabinet">FlowTime</h1>
-              <p className="text-xs text-gray-400 font-medium">Admin Panel</p>
-            </div>
+    <Sidebar className="w-20 border-r bg-white shadow-sm">
+      <SidebarHeader className="p-4 border-b-0">
+        <div className="flex items-center justify-center">
+          <div className="h-10 w-10 bg-blue-500 rounded-2xl flex items-center justify-center shadow-md">
+            <Clock className="h-5 w-5 text-white" />
           </div>
         </div>
-        
-        
       </SidebarHeader>
 
-      <SidebarContent className="px-6 py-4">
+      <SidebarContent className="px-2 py-6">
+        {/* HOME Section */}
         <SidebarGroup>
+          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3 px-2">
+            HOME
+          </div>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-2">
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      className={({ isActive }) =>
-                        `group flex items-center rounded-2xl text-sm font-medium transition-all duration-300 px-4 py-3 space-x-3 ${
-                          isActive
-                            ? 'bg-gradient-to-r from-rose-400 to-pink-500 shadow-lg transform scale-[1.02]'
-                            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50/80 hover:transform hover:scale-[1.01]'
-                        }`
-                      }
-                    >
-                      <item.icon className="h-4 w-4 flex-shrink-0" />
-                      <span className="font-medium">{item.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+            <SidebarMenu className="space-y-1">
+              {homeItems.map(item => renderMenuItem(item))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Separator */}
+        <div className="my-6 mx-3 h-px bg-gray-200"></div>
+
+        {/* UI COMPONENTS Section */}
+        <SidebarGroup>
+          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3 px-2">
+            UI COMPONENTS
+          </div>
+          <SidebarGroupContent>
+            <SidebarMenu className="space-y-1">
+              {uiComponentItems.map(item => renderMenuItem(item))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Separator */}
+        <div className="my-6 mx-3 h-px bg-gray-200"></div>
+
+        {/* APPS Section */}
+        <SidebarGroup>
+          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3 px-2">
+            APPS
+          </div>
+          <SidebarGroupContent>
+            <SidebarMenu className="space-y-1">
+              {appItems.map(item => renderExpandableItem(item))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="px-6 py-6 border-t-0">
-        <div className="space-y-3">
-          <div className="flex items-center space-x-3 px-4 py-3 rounded-2xl bg-gray-50/50 border-0">
-            <div className="h-9 w-9 bg-gradient-to-br from-violet-400 to-purple-500 rounded-full flex items-center justify-center shadow-md">
-              <User className="h-4 w-4 text-white" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-800">Dr. Sarah Johnson</p>
-              <p className="text-xs text-gray-400">sarah@flowtime.com</p>
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <NavLink
-              to="/dashboard/help"
-              className={({ isActive }) =>
-                `flex items-center rounded-2xl text-sm font-medium transition-all duration-200 px-4 py-2.5 space-x-3 ${
-                  isActive
-                    ? 'bg-gradient-to-r from-rose-400 to-pink-500 text-white'
-                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50/80'
-                }`
-              }
-            >
-              <HelpCircle className="h-4 w-4" />
-              <span>Help & Support</span>
-            </NavLink>
-            
-            <NavLink
-              to="/dashboard/profile"
-              className={({ isActive }) =>
-                `flex items-center rounded-2xl text-sm font-medium transition-all duration-200 px-4 py-2.5 space-x-3 ${
-                  isActive
-                    ? 'bg-gradient-to-r from-rose-400 to-pink-500 text-white'
-                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50/80'
-                }`
-              }
-            >
-              <User className="h-4 w-4" />
-              <span>Your Profile</span>
-            </NavLink>
-
-            <Button
-              onClick={handleSignOut}
-              variant="ghost"
-              className="w-full justify-start px-4 py-2.5 h-auto text-sm font-medium text-rose-500 hover:text-rose-600 hover:bg-rose-50/50 rounded-2xl transition-all duration-200"
-            >
-              <LogOut className="h-4 w-4" />
-              <span className="ml-3">Sign Out</span>
-            </Button>
-          </div>
-        </div>
+      <SidebarFooter className="p-4 border-t-0">
+        <Button
+          onClick={handleSignOut}
+          variant="ghost"
+          className="w-full justify-center p-3 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-200"
+        >
+          <LogOut className="h-5 w-5" />
+        </Button>
       </SidebarFooter>
     </Sidebar>
   );
