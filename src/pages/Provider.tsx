@@ -136,7 +136,7 @@ const Provider = () => {
           <table className="w-full">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="text-left p-4 font-medium text-gray-900">Provider</th>
+                <th className="text-left p-4 font-medium text-gray-900">Staff</th>
                 <th className="text-left p-4 font-medium text-gray-900">Specialty</th>
                 <th className="text-left p-4 font-medium text-gray-900">Rating</th>
                 <th className="text-left p-4 font-medium text-gray-900">Location</th>
@@ -198,12 +198,12 @@ const Provider = () => {
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Providers</h1>
-                <p className="text-gray-600 mt-1">Manage your healthcare providers</p>
+                <h1 className="text-3xl font-bold text-gray-900">Staff</h1>
+                <p className="text-gray-600 mt-1">Manage your healthcare Staff</p>
               </div>
               <Button className="bg-gradient-to-r from-blue-600 to-indigo-600">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Provider
+                Add Staff
               </Button>
             </div>
 
@@ -215,7 +215,7 @@ const Provider = () => {
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                       <Input
-                        placeholder="Search providers..."
+                        placeholder="Search Staff..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-10"
@@ -271,7 +271,7 @@ const Provider = () => {
             {/* Results */}
             <div className="mb-4">
               <p className="text-gray-600">
-                Showing {filteredProviders.length} of {providers.length} providers
+                Showing {filteredProviders.length} of {providers.length} Staff
               </p>
             </div>
 
