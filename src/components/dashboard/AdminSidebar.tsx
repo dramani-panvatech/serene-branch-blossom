@@ -90,14 +90,15 @@ const AdminSidebar = () => {
         <NavLink
           to={item.url}
           className={({ isActive }) =>
-            `group flex items-center justify-center rounded-xl transition-all duration-200 p-3 ${
+            `group flex items-center gap-3 rounded-lg transition-all duration-200 p-3 ${
               isActive
                 ? 'bg-blue-100 text-blue-600'
-                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-            } ${isChild ? 'ml-4 p-2' : ''}`
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            } ${isChild ? 'ml-6 p-2' : ''}`
           }
         >
-          <item.icon className="h-5 w-5" />
+          <item.icon className="h-5 w-5 flex-shrink-0" />
+          <span className="font-medium">{item.title}</span>
         </NavLink>
       </SidebarMenuButton>
     </SidebarMenuItem>
@@ -106,24 +107,27 @@ const AdminSidebar = () => {
   const renderExpandableItem = (item: any) => {
     const isExpanded = expandedSections.includes(item.title.toLowerCase());
     return (
-      <div key={item.title}>
+      <div key={item.title} className="space-y-1">
         <SidebarMenuItem>
           <SidebarMenuButton asChild>
             <button
               onClick={() => toggleSection(item.title.toLowerCase())}
-              className="group flex items-center justify-center rounded-xl transition-all duration-200 p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-50 w-full relative"
+              className="group flex items-center justify-between w-full rounded-lg transition-all duration-200 p-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             >
-              <item.icon className="h-5 w-5" />
+              <div className="flex items-center gap-3">
+                <item.icon className="h-5 w-5 flex-shrink-0" />
+                <span className="font-medium">{item.title}</span>
+              </div>
               {isExpanded ? (
-                <ChevronDown className="h-3 w-3 absolute -bottom-1 -right-1 text-gray-400" />
+                <ChevronDown className="h-4 w-4" />
               ) : (
-                <ChevronRight className="h-3 w-3 absolute -bottom-1 -right-1 text-gray-400" />
+                <ChevronRight className="h-4 w-4" />
               )}
             </button>
           </SidebarMenuButton>
         </SidebarMenuItem>
         {isExpanded && item.children && (
-          <div className="ml-2 space-y-1">
+          <div className="space-y-1">
             {item.children.map((child: any) => renderMenuItem(child, true))}
           </div>
         )}
@@ -137,19 +141,23 @@ const AdminSidebar = () => {
   };
 
   return (
-    <Sidebar className="w-20 border-r bg-white shadow-sm">
-      <SidebarHeader className="p-4 border-b-0">
-        <div className="flex items-center justify-center">
-          <div className="h-10 w-10 bg-blue-500 rounded-2xl flex items-center justify-center shadow-md">
+    <Sidebar className="w-64 border-r bg-white shadow-sm">
+      <SidebarHeader className="p-6 border-b">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
             <Clock className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">Admin Panel</h2>
+            <p className="text-sm text-gray-500">Dashboard</p>
           </div>
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="px-2 py-6">
+      <SidebarContent className="px-4 py-6">
         {/* HOME Section */}
         <SidebarGroup>
-          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3 px-2">
+          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4 px-3">
             HOME
           </div>
           <SidebarGroupContent>
@@ -164,7 +172,7 @@ const AdminSidebar = () => {
 
         {/* UI COMPONENTS Section */}
         <SidebarGroup>
-          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3 px-2">
+          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4 px-3">
             UI COMPONENTS
           </div>
           <SidebarGroupContent>
@@ -179,7 +187,7 @@ const AdminSidebar = () => {
 
         {/* APPS Section */}
         <SidebarGroup>
-          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3 px-2">
+          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4 px-3">
             APPS
           </div>
           <SidebarGroupContent>
@@ -190,13 +198,14 @@ const AdminSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t-0">
+      <SidebarFooter className="p-4 border-t">
         <Button
           onClick={handleSignOut}
           variant="ghost"
-          className="w-full justify-center p-3 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-200"
+          className="w-full justify-start gap-3 p-3 text-gray-600 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200"
         >
           <LogOut className="h-5 w-5" />
+          <span className="font-medium">Sign Out</span>
         </Button>
       </SidebarFooter>
     </Sidebar>
