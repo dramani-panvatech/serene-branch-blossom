@@ -36,7 +36,7 @@ const AdminSidebar = () => {
   const homeItems = [
     { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
     { title: 'Customers', url: '/dashboard/customers', icon: Users },
-    { title: 'Staff', url: '/dashboard/provider', icon: UserCheck },
+    { title: 'Provider', url: '/dashboard/provider', icon: UserCheck },
     { title: 'Calendar', url: '/dashboard/calendar', icon: Calendar },
     { title: 'Services', url: '/dashboard/services', icon: Package },
     { title: 'Payment', url: '/dashboard/payment', icon: CreditCard },
@@ -110,7 +110,7 @@ const AdminSidebar = () => {
           className="absolute top-4 right-4 p-1 rounded-md text-gray-600 dark:text-gray-300 bg-border dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          type="button" style={{ right: -13 }}
+          type="button" style={{right: -13}}
         >
           {collapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
         </button>
