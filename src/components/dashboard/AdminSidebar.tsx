@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
@@ -44,6 +43,7 @@ const AdminSidebar = () => {
   const homeItems = [
     { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
     { title: 'Dashboard 2', url: '/dashboard/analytics', icon: LayoutDashboard },
+    { title: 'Profile', url: '/dashboard/profile', icon: User },
   ];
 
   const uiComponentItems = [
