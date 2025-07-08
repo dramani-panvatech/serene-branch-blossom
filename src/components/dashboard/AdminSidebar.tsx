@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
@@ -42,46 +43,14 @@ const AdminSidebar = () => {
 
   const homeItems = [
     { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
-    { title: 'Dashboard 2', url: '/dashboard/analytics', icon: LayoutDashboard },
+    { title: 'Calendar', url: '/dashboard/calendar', icon: Calendar },
+    { title: 'Customers', url: '/dashboard/customers', icon: Users },
+    { title: 'Provider', url: '/dashboard/provider', icon: UserCheck },
+    { title: 'Services', url: '/dashboard/services', icon: Package },
+    { title: 'Payment', url: '/dashboard/payment', icon: CreditCard },
+    { title: 'Settings', url: '/dashboard/settings', icon: Settings },
+    { title: 'Help', url: '/dashboard/help', icon: HelpCircle },
     { title: 'Profile', url: '/dashboard/profile', icon: User },
-  ];
-
-  const uiComponentItems = [
-    { title: 'Buttons', url: '/dashboard/buttons', icon: Package },
-    { title: 'Alerts', url: '/dashboard/alerts', icon: HelpCircle },
-    { title: 'Card', url: '/dashboard/card', icon: CreditCard },
-    { title: 'Forms', url: '/dashboard/forms', icon: Settings },
-    { title: 'Typography', url: '/dashboard/typography', icon: Settings },
-  ];
-
-  const appItems = [
-    { 
-      title: 'Ecommerce', 
-      icon: Package, 
-      expandable: true,
-      children: [
-        { title: 'Products', url: '/dashboard/products' },
-        { title: 'Orders', url: '/dashboard/orders' },
-      ]
-    },
-    { 
-      title: 'User Profile', 
-      icon: User, 
-      expandable: true,
-      children: [
-        { title: 'Profile', url: '/dashboard/profile' },
-        { title: 'Settings', url: '/dashboard/settings' },
-      ]
-    },
-    { 
-      title: 'Blog', 
-      icon: Settings, 
-      expandable: true,
-      children: [
-        { title: 'Posts', url: '/dashboard/posts' },
-        { title: 'Categories', url: '/dashboard/categories' },
-      ]
-    },
   ];
 
   const renderMenuItem = (item: any, isChild = false) => (
@@ -104,37 +73,6 @@ const AdminSidebar = () => {
     </SidebarMenuItem>
   );
 
-  const renderExpandableItem = (item: any) => {
-    const isExpanded = expandedSections.includes(item.title.toLowerCase());
-    return (
-      <div key={item.title} className="space-y-1">
-        <SidebarMenuItem>
-          <SidebarMenuButton asChild>
-            <button
-              onClick={() => toggleSection(item.title.toLowerCase())}
-              className="group flex items-center justify-between w-full rounded-lg transition-all duration-200 p-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-            >
-              <div className="flex items-center gap-3">
-                <item.icon className="h-5 w-5 flex-shrink-0" />
-                <span className="font-medium">{item.title}</span>
-              </div>
-              {isExpanded ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
-            </button>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-        {isExpanded && item.children && (
-          <div className="space-y-1">
-            {item.children.map((child: any) => renderMenuItem(child, true))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   const handleSignOut = () => {
     console.log('User signed out');
     navigate('/signin');
@@ -155,44 +93,14 @@ const AdminSidebar = () => {
       </SidebarHeader>
 
       <SidebarContent className="px-4 py-6">
-        {/* HOME Section */}
+        {/* MAIN MENU Section */}
         <SidebarGroup>
           <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4 px-3">
-            HOME
+            MAIN MENU
           </div>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
               {homeItems.map(item => renderMenuItem(item))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Separator */}
-        <div className="my-6 mx-3 h-px bg-gray-200"></div>
-
-        {/* UI COMPONENTS Section */}
-        <SidebarGroup>
-          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4 px-3">
-            UI COMPONENTS
-          </div>
-          <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
-              {uiComponentItems.map(item => renderMenuItem(item))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Separator */}
-        <div className="my-6 mx-3 h-px bg-gray-200"></div>
-
-        {/* APPS Section */}
-        <SidebarGroup>
-          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4 px-3">
-            APPS
-          </div>
-          <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
-              {appItems.map(item => renderExpandableItem(item))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
